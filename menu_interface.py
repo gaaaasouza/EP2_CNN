@@ -1,10 +1,12 @@
 import os
+import sys
 from experiment_runner import ExperimentRunner
 from data_manager import DataManager
 from file_manager import FileManager
 from model_evaluator import ModelEvaluator
 from cnn_raw_classifier import CNNRawClassifier
 from cnn_hog_classifier import CNNHOGClassifier
+from hyperparameter_optimizer import HyperparameterOptimizer
 
 class MenuInterface:
     """Interface de menu para seleção de algoritmos - compatível com Windows"""
@@ -44,6 +46,8 @@ class MenuInterface:
         print("4. CNN com HOG - Binaria (0 vs 1)")
         print("5. Executar Todos os Experimentos")
         print("6. Informacoes sobre os Algoritmos")
+        print("7. Otimizar Hiperparametros CNN Raw")
+        print("8. Otimizar Hiperparametros CNN HOG")
         print("0. Sair")
         print()
         print("=" * 60)
@@ -51,12 +55,12 @@ class MenuInterface:
         while True:
             try:
                 choice = input("Digite sua opcao (0-8): ").strip()
-                if choice in ['0', '1', '2', '3', '4', '5', '6']:
+                if choice in ['0', '1', '2', '3', '4', '5', '6', '7', '8']:
                     return int(choice)
                 else:
-                    print("Opcao invalida! Digite um numero entre 0 e 6.")
+                    print("Opcao invalida! Digite um numero entre 0 e 8.")
             except (ValueError, KeyboardInterrupt):
-                print("Entrada invalida! Digite um numero entre 0 e 6.")
+                print("Entrada invalida! Digite um numero entre 0 e 8.")
     
     def run_cnn_raw_multiclass(self):
         """Executa CNN com dados brutos - multiclasse"""
@@ -169,6 +173,68 @@ class MenuInterface:
         
         input("\nPressione Enter para voltar ao menu...")
     
+    def optimize_cnn_raw(self):
+        """Otimiza hiperparâmetros CNN Raw"""
+        self.clear_screen()
+        print("=" * 60)
+        print("OTIMIZANDO: Hiperparametros CNN Raw")
+        print("=" * 60)
+        
+        self.prepare_data_if_needed()
+        
+        optimizer = HyperparameterOptimizer(
+            self.data_manager, self.file_manager, self.evaluator
+        )
+        
+        # Definir grade de parâmetros
+        param_grid = optimizer.define_parameter_grid('cnn_raw')
+        print(f"Grade de parametros: {param_grid}")
+        
+        # Executar grid search
+        results = optimizer.grid_search_cnn_raw(param_grid)
+        
+        # Salvar resultados
+        optimizer.save_results(results, 'cnn_raw_optimization_results.json')
+        
+        # Plotar resultados
+        optimizer.plot_results(results, 'cnn_raw_optimization_plot.png')
+        
+        print(f"\nMelhores parametros: {results['best_params']}")
+        print(f"Melhor score: {results['best_score']:.4f}")
+        
+        input("\nOtimizacao concluida! Pressione Enter para continuar...")
+
+    def optimize_cnn_hog(self):
+        """Otimiza hiperparâmetros CNN HOG"""
+        self.clear_screen()
+        print("=" * 60)
+        print("OTIMIZANDO: Hiperparametros CNN HOG")
+        print("=" * 60)
+        
+        self.prepare_data_if_needed()
+        
+        optimizer = HyperparameterOptimizer(
+            self.data_manager, self.file_manager, self.evaluator
+        )
+        
+        # Definir grade de parâmetros
+        param_grid = optimizer.define_parameter_grid('cnn_hog')
+        print(f"Grade de parametros: {param_grid}")
+        
+        # Executar grid search
+        results = optimizer.grid_search_cnn_hog(param_grid)
+        
+        # Salvar resultados
+        optimizer.save_results(results, 'cnn_hog_optimization_results.json')
+        
+        # Plotar resultados
+        optimizer.plot_results(results, 'cnn_hog_optimization_plot.png')
+        
+        print(f"\nMelhores parametros: {results['best_params']}")
+        print(f"Melhor score: {results['best_score']:.4f}")
+        
+        input("\nOtimizacao concluida! Pressione Enter para continuar...")
+    
     def run(self):
         """Executa o loop principal do menu"""
         while True:
@@ -191,6 +257,10 @@ class MenuInterface:
                     self.run_all_experiments()
                 elif choice == 6:
                     self.show_info()
+                elif choice == 7:
+                    self.optimize_cnn_raw()
+                elif choice == 8:
+                    self.optimize_cnn_hog()
                     
             except KeyboardInterrupt:
                 self.clear_screen()
