@@ -40,23 +40,33 @@ class DataManager:
                 self.test_images[test_filter], self.test_labels[test_filter])
     
     def extract_hog_features(self, images: np.ndarray) -> np.ndarray:
-        """Extrai características HOG das imagens"""
-        print("Extraindo HOG...")
+        """Extrai características HOG das imagens."""
+        # print("Extraindo HOG...") # Comentei para reduzir output durante a otimização
         hog_features = []
         for image in images:
-            # Remove dimensão de canal se existir
-            if len(image.shape) == 3:
+            # Remove dimensão de canal se existir (para garantir entrada 2D para hog)
+            if len(image.shape) == 3 and image.shape[-1] == 1:
                 image = image.squeeze()
             features = hog(image, pixels_per_cell=(8, 8), cells_per_block=(2, 2), visualize=False)
             hog_features.append(features)
         return np.array(hog_features)
     
     def prepare_hog_data(self, train_images: np.ndarray, test_images: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
-        """Prepara dados HOG normalizados"""
+        """
+        Prepara dados HOG normalizados.
+        Permite que test_images seja um array vazio se não houver dados de teste para processar (ex: durante otimização).
+        """
         train_hog = self.extract_hog_features(train_images)
-        test_hog = self.extract_hog_features(test_images)
         
+        test_hog = np.array([])
+        if test_images.size > 0: # Processa test_images apenas se não for vazio
+            test_hog = self.extract_hog_features(test_images)
+        
+        self.scaler = StandardScaler() # Re-instanciar para garantir fit apenas no treino
         train_hog_normalized = self.scaler.fit_transform(train_hog)
-        test_hog_normalized = self.scaler.transform(test_hog)
+        
+        test_hog_normalized = np.array([])
+        if test_hog.size > 0:
+            test_hog_normalized = self.scaler.transform(test_hog)
         
         return train_hog_normalized, test_hog_normalized
