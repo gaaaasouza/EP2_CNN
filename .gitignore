@@ -1,0 +1,35 @@
+# Arquivo .gitignore
+
+# Ambientes Virtuais
+venv/
+env/
+.venv/
+.env
+
+# Arquivos de Cache e Bytecode do Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Pastas de Saída Geradas pelo Projeto
+outputs_*/
+outputs_bruto/
+outputs_bruto_binario/
+outputs_bruto_best/
+outputs_hog/
+outputs_hog_binario/
+outputs_hog_best/
+
+# Relatórios do Grid Search
+grid_search_report_*.json
+
+# Arquivos de IDEs e Editores
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Arquivos de Sistema Operacional
+.DS_Store
+Thumbs.db
