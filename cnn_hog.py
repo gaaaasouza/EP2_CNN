@@ -185,7 +185,7 @@ def CNN_bin(train_images, train_labels, test_images, test_labels,
 
 
 if __name__ == "__main__":
-    print("Executando 'cnn_hog.py' de forma independente...")
+    print("Executando 'cnn_hog.py'")
     (train_images, train_labels), (test_images, test_labels) = datasets.mnist.load_data()
     train_images, test_images = train_images / 255.0, test_images / 255.0
     print("Dados preparados!")
