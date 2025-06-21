@@ -93,8 +93,25 @@ def CNN_multi(train_images, train_labels, test_images, test_labels,
         print(f'\nExecução multiclasse com HOG - Acurácia no teste: {test_acc:.4f}')
         actual_epochs = len(history.history['loss'])
         hiperparametros = {
-            'tipo_modelo': 'Rede Densa HOG Multiclasse', 'dense1_units': dense1_units, 'dense2_units': dense2_units,
-            'learning_rate': learning_rate, 'epochs_reais_executadas': actual_epochs, 'acuracia_final': test_acc
+            'tipo_modelo': 'Rede Densa HOG Multiclasse',
+            'arquitetura_dense': {
+                'entrada': {'shape': train_hog_features.shape[1]},
+                'camadas': [
+                    {'type': 'Dense', 'units': dense1_units, 'activation': 'relu'},
+                    {'type': 'Dense', 'units': dense2_units, 'activation': 'relu'},
+                    {'type': 'Dense', 'units': 10, 'activation': 'softmax'}
+                ]
+            },
+            'hiperparametros_treino': {
+                'learning_rate': learning_rate,
+                'loss': 'sparse_categorical_crossentropy',
+                'metrics': ['accuracy'],
+                'batch_size': 32,
+                'epochs': max_epochs,
+                'epochs_reais_executadas': actual_epochs,
+                'early_stopping_patience': 3
+            },
+            'acuracia_final': test_acc
         }
         post_train_weights = model.get_weights()
         historico = {key: [float(v) for v in val] for key, val in history.history.items()}
@@ -158,10 +175,29 @@ def CNN_bin(train_images, train_labels, test_images, test_labels,
     if save_files:
         print(f'\nExecução binária com HOG - Acurácia no teste: {test_acc:.4f}')
         actual_epochs = len(history.history['loss'])
+        
         hiperparametros = {
-            'tipo_modelo': 'Rede Densa HOG Binária', 'dense1_units': dense1_units, 'dense2_units': dense2_units,
-            'learning_rate': learning_rate, 'epochs_reais_executadas': actual_epochs, 'acuracia_final': test_acc
+            'tipo_modelo': 'Rede Densa HOG Binaria',
+            'arquitetura_dense': {
+                'entrada': {'shape': train_hog_features.shape[1]},
+                'camadas': [
+                    {'type': 'Dense', 'units': dense1_units, 'activation': 'relu'},
+                    {'type': 'Dense', 'units': dense2_units, 'activation': 'relu'},
+                    {'type': 'Dense', 'units': 1, 'activation': 'sigmoid'}
+                ]
+            },
+            'hiperparametros_treino': {
+                'learning_rate': learning_rate,
+                'loss': 'binary_crossentropy',
+                'metrics': ['accuracy'],
+                'batch_size': 32,
+                'epochs': max_epochs,
+                'epochs_reais_executadas': actual_epochs,
+                'early_stopping_patience': 3
+            },
+            'acuracia_final': test_acc
         }
+
         post_train_weights = model.get_weights()
         historico = {key: [float(v) for v in val] for key, val in history.history.items()}
         erros = historico.get('loss', [])
