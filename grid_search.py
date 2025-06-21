@@ -49,8 +49,9 @@ def run_grid_search(model_type, script_module, param_grid, train_data, test_data
     sorted_results = sorted(results, key=lambda x: x['accuracy'], reverse=True)
     report_data = {'best_result': {'params': best_params, 'accuracy': best_accuracy}, 'all_results': sorted_results}
     
-    with open(report_filename, 'w') as f:
+    with open(os.path.join('grid_search', report_filename), 'w') as f:
         json.dump(report_data, f, indent=4)
+    
     print(f"Relatório completo salvo em: {report_filename}\n")
     
     return best_params
@@ -106,7 +107,7 @@ if __name__ == "__main__":
         cnn_bruto.CNN_multi(
             train_images_bruto, train_labels, test_images_bruto, test_labels,
             save_files=True, 
-            output_dir='outputs_bruto_best', 
+            output_dir='outputs_bruto_grid', 
             **best_bruto_params
         )
 
@@ -116,7 +117,7 @@ if __name__ == "__main__":
         cnn_hog.CNN_multi(
             train_images_hog, train_labels, test_images_hog, test_labels,
             save_files=True, 
-            output_dir='outputs_hog_best', 
+            output_dir='outputs_hog_grid', 
             **best_hog_params
         )
 
