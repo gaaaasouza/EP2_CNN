@@ -34,18 +34,7 @@ Para executar este projeto, você precisará de Python 3 e das seguintes bibliot
     cd <NOME_DA_PASTA_DO_PROJETO>
     ```
 
-2.  **Crie e ative um ambiente virtual (recomendado):**
-    ```bash
-    # Para Windows
-    python -m venv venv
-    .\venv\Scripts\activate
-
-    # Para macOS/Linux
-    python3 -m venv venv
-    source venv/bin/activate
-    ```
-
-3.  **Instale as dependências:**
+2.  **Instale as dependências:**
     Crie um arquivo chamado `requirements.txt` com o conteúdo abaixo:
     ```txt
     tensorflow
