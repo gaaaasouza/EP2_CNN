@@ -46,7 +46,7 @@ def save_outputs(dir, hiperp, init_w, train_hist, train_err, output_CNN, final_w
 
 
 def CNN_multi(train_images, train_labels, test_images, test_labels, 
-              filters=64, dense_units=256, learning_rate=0.0005, 
+              filters=32, dense_units=64, learning_rate=0.001, 
               save_files=True, output_dir='outputs_bruto'):
     """Cria, treina e avalia a CNN para multiclasse."""
     model = models.Sequential([
@@ -104,7 +104,7 @@ def CNN_multi(train_images, train_labels, test_images, test_labels,
 
 
 def CNN_bin(train_images, train_labels, test_images, test_labels, 
-            filters=64, dense_units=256, learning_rate=0.0005, 
+            filters=32, dense_units=64, learning_rate=0.001, 
             save_files=True, output_dir='outputs_bruto_binario'):
     """Cria, treina e avalia a CNN para o caso binário."""
     train_labels_binary = (train_labels >= 5).astype(int)
