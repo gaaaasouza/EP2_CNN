@@ -63,6 +63,18 @@ def CNN_multi(train_images, train_labels, test_images, test_labels,
     model.compile(optimizer=optimizer,
                   loss='sparse_categorical_crossentropy',
                   metrics=['accuracy'])
+    
+    # --- INÍCIO: INFORMAÇÕES DA ARQUITETURA ---
+    if save_files:
+        print("\n--- Arquitetura e Hiperparâmetros do Modelo (CNN Bruto Multiclasse) ---")
+        print(f"   Parâmetros da Camada Conv2D: Filtros={filters}, Kernel=(3,3), Ativação=relu")
+        print(f"   Parâmetros da Camada MaxPooling2D: Pool Size=(2,2)")
+        print(f"   Parâmetros da Camada Densa: Unidades={dense_units}, Ativação=relu")
+        print(f"   Taxa de Aprendizado (learning_rate): {learning_rate}")
+        print("   Resumo do Modelo Keras:")
+        model.summary()
+        print("--------------------------------------------------------------------")
+
 
     early_stopping = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=3, restore_best_weights=True)
     max_epochs = 50
@@ -109,6 +121,17 @@ def CNN_multi(train_images, train_labels, test_images, test_labels,
         saidas = model.predict(test_images)
         predicoes = np.argmax(saidas, axis=1)
 
+        print("\n--- Análise de Erros da Rede ---")
+        error_indices = np.where(predicoes != test_labels)[0]
+        print(f"   Total de erros na saída: {len(error_indices)} de {len(test_labels)} amostras de teste.")
+        print(f"   Taxa de acerto: {100 * (1 - len(error_indices) / len(test_labels)):.2f}%")
+        # Mostra os 5 primeiros exemplos de erros
+        for i, error_idx in enumerate(error_indices[:5]):
+            predicted_label = predicoes[error_idx]
+            true_label = test_labels[error_idx]
+            print(f"     - Exemplo {i+1}: Amostra de teste #{error_idx} | Previsto: {predicted_label}, Correto: {true_label}")
+        print("--------------------------------\n")
+
         save_outputs(output_dir, hiperparametros, init_weights, historico, erros, saidas, post_train_weights, predicoes, test_labels)
         print(f"Arquivos de saída salvos em: '{output_dir}'")
         
@@ -143,6 +166,16 @@ def CNN_bin(train_images, train_labels, test_images, test_labels,
     init_weights = model.get_weights()
     optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
     model.compile(optimizer=optimizer, loss='binary_crossentropy', metrics=['accuracy'])
+
+    if save_files:
+        print("\n--- Arquitetura e Hiperparâmetros do Modelo (CNN Bruto Binário) ---")
+        print(f"   Parâmetros da Camada Conv2D: Filtros={filters}, Kernel=(3,3), Ativação=relu")
+        print(f"   Parâmetros da Camada MaxPooling2D: Pool Size=(2,2)")
+        print(f"   Parâmetros da Camada Densa: Unidades={dense_units}, Ativação=relu")
+        print(f"   Taxa de Aprendizado (learning_rate): {learning_rate}")
+        print("   Resumo do Modelo Keras:")
+        model.summary()
+        print("------------------------------------------------------------------")
 
     early_stopping = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=3, restore_best_weights=True)
     max_epochs = 50
@@ -188,6 +221,16 @@ def CNN_bin(train_images, train_labels, test_images, test_labels,
         saidas = model.predict(test_images)
         predicoes = (saidas > 0.5).astype(int).flatten()
 
+        print("\n--- Análise de Erros da Rede ---")
+        error_indices = np.where(predicoes != test_labels_binary)[0]
+        print(f"   Total de erros na saída: {len(error_indices)} de {len(test_labels_binary)} amostras de teste.")
+        print(f"   Taxa de acerto: {100 * (1 - len(error_indices) / len(test_labels_binary)):.2f}%")
+        for i, error_idx in enumerate(error_indices[:5]):
+            predicted_label = predicoes[error_idx]
+            true_label = test_labels_binary[error_idx]
+            print(f"     - Exemplo {i+1}: Amostra de teste #{error_idx} | Previsto: {predicted_label}, Correto: {true_label}")
+        print("--------------------------------\n")
+
         save_outputs(output_dir, hiperparametros, init_weights, historico, erros, saidas, post_train_weights, predicoes, test_labels_binary)
         print(f"Arquivos de saída salvos em: '{output_dir}'")
         
@@ -205,7 +248,7 @@ def CNN_bin(train_images, train_labels, test_images, test_labels,
 
 
 if __name__ == "__main__":
-    print("Executando 'cnn_bruto.py' de forma independente...")
+    print("Executando 'cnn_bruto.py'")
     (train_images, train_labels), (test_images, test_labels) = datasets.mnist.load_data()
     train_images, test_images = train_images / 255.0, test_images / 255.0
     train_images = train_images[..., tf.newaxis]

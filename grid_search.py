@@ -49,10 +49,15 @@ def run_grid_search(model_type, script_module, param_grid, train_data, test_data
     sorted_results = sorted(results, key=lambda x: x['accuracy'], reverse=True)
     report_data = {'best_result': {'params': best_params, 'accuracy': best_accuracy}, 'all_results': sorted_results}
     
-    with open(os.path.join('grid_search', report_filename), 'w') as f:
+    output_dir_reports = 'grid_search_reports'
+    
+    if not os.path.exists(output_dir_reports):
+        os.makedirs(output_dir_reports)
+
+    with open(os.path.join(output_dir_reports, report_filename), 'w') as f:
         json.dump(report_data, f, indent=4)
     
-    print(f"Relatório completo salvo em: {report_filename}\n")
+    print(f"Relatório completo salvo em: '{os.path.join(output_dir_reports, report_filename)}'\n")
     
     return best_params
 
