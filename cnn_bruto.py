@@ -46,7 +46,7 @@ def save_outputs(dir, hiperp, init_w, train_hist, train_err, output_CNN, final_w
 
 
 def CNN_multi(train_images, train_labels, test_images, test_labels, 
-              filters=32, dense_units=64, learning_rate=0.001, 
+              filters=8, dense_units=64, learning_rate=0.001, 
               save_files=True, output_dir='outputs_bruto'):
     """Cria, treina e avalia a CNN para multiclasse."""
     model = models.Sequential([
@@ -90,10 +90,31 @@ def CNN_multi(train_images, train_labels, test_images, test_labels,
     if save_files:
         print(f'\nExecução multiclasse - Acurácia no teste: {test_acc:.4f}')
         actual_epochs = len(history.history['loss'])
+        
         hiperparametros = {
-            'tipo_modelo': 'CNN Bruto Multiclasse', 'filters': filters, 'dense_units': dense_units, 
-            'learning_rate': learning_rate, 'epochs_reais_executadas': actual_epochs, 'acuracia_final': test_acc
+            'tipo_modelo': 'CNN Bruto Multiclasse',
+            'arquitetura_CNN': {
+                'camadas_conv': [
+                    {'filters': filters, 'kernel_size': (3, 3), 'activation': 'relu'}
+                ],
+                'pooling': {'pool_size': (2, 2)},
+                'camadas_dense': [
+                    {'units': dense_units, 'activation': 'relu'},
+                    {'units': 10, 'activation': 'softmax'}
+                ]
+            },
+            'hiperparametros_treino': {
+                'learning_rate': learning_rate,
+                'loss': 'sparse_categorical_crossentropy',
+                'metrics': ['accuracy'],
+                'batch_size': 32,  # Se não for especificado no fit(), o padrão é 32
+                'epochs': max_epochs,
+                'epochs_reais_executadas': actual_epochs,
+                'early_stopping_patience': 3
+            },
+            'acuracia_final': test_acc
         }
+
         post_train_weights = model.get_weights()
         historico = {key: [float(v) for v in val] for key, val in history.history.items()}
         erros = historico.get('loss', [])
@@ -127,7 +148,7 @@ def CNN_multi(train_images, train_labels, test_images, test_labels,
 
 
 def CNN_bin(train_images, train_labels, test_images, test_labels, 
-            filters=32, dense_units=64, learning_rate=0.001, 
+            filters=8, dense_units=64, learning_rate=0.001, 
             save_files=True, output_dir='outputs_bruto_binario'):
     """Cria, treina e avalia a CNN para o caso binário."""
     train_labels_binary = (train_labels >= 5).astype(int)
@@ -169,10 +190,31 @@ def CNN_bin(train_images, train_labels, test_images, test_labels,
     if save_files:
         print(f'\nExecução binária - Acurácia no teste: {test_acc:.4f}')
         actual_epochs = len(history.history['loss'])
+
         hiperparametros = {
-            'tipo_modelo': 'CNN Bruto Binário', 'filters': filters, 'dense_units': dense_units, 
-            'learning_rate': learning_rate, 'epochs_reais_executadas': actual_epochs, 'acuracia_final': test_acc
+            'tipo_modelo': 'CNN Bruto Binario',
+            'arquitetura_CNN': {
+                'camadas_conv': [
+                    {'filters': filters, 'kernel_size': (3, 3), 'activation': 'relu'}
+                ],
+                'pooling': {'pool_size': (2, 2)},
+                'camadas_dense': [
+                    {'units': dense_units, 'activation': 'relu'},
+                    {'units': 1, 'activation': 'sigmoid'}
+                ]
+            },
+            'hiperparametros_treino': {
+                'learning_rate': learning_rate,
+                'loss': 'binary_crossentropy',
+                'metrics': ['accuracy'],
+                'batch_size': 32,
+                'epochs': max_epochs,
+                'epochs_reais_executadas': actual_epochs,
+                'early_stopping_patience': 3
+            },
+            'acuracia_final': test_acc
         }
+
         post_train_weights = model.get_weights()
         historico = {key: [float(v) for v in val] for key, val in history.history.items()}
         erros = historico.get('loss', [])
