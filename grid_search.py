@@ -74,16 +74,16 @@ if __name__ == "__main__":
     # --- Grade de Hiperparâmetros para CNN Bruto ---
     # CUIDADO: Adicionar mais valores resultará em um tempo de execução MUITO LONGO.
     param_grid_bruto = {
-        'filters': [16, 32],
-        'dense_units': [64, 128],
-        'learning_rate': [0.001, 0.0005]
+        'filters': [16, 32, 64],
+        'dense_units': [64, 128, 256],
+        'learning_rate': [0.01, 0.001, 0.0005]
     }
 
     # --- Grade de Hiperparâmetros para Rede Densa com HOG ---
     param_grid_hog = {
-        'dense1_units': [128, 256],
-        'dense2_units': [64, 128],
-        'learning_rate': [0.001, 0.0005]
+        'dense1_units': [128, 256, 512],
+        'dense2_units': [64, 128, 256],
+        'learning_rate': [0.01, 0.001, 0.0005]
     }
 
     # Executa o Grid Search e obtém os melhores parâmetros
